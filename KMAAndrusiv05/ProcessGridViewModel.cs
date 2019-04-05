@@ -5,21 +5,19 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Threading;
 
 namespace KMAAndrusiv05
 {
-    class ProcessGridViewModel: BaseViewModel
+    internal class ProcessGridViewModel: BaseViewModel
     {
         class UpdateThread
         {
-            private object _locker;
-            private ObservableCollection<ProcessEntry> _processes;
+            private readonly object _locker;
+            private readonly ObservableCollection<ProcessEntry> _processes;
 
             public event EventHandler Updated; 
 
@@ -29,17 +27,18 @@ namespace KMAAndrusiv05
                 while (true)
                 {
                     st.Restart();
-                    List<ProcessEntry> forRemoval = new List<ProcessEntry>();
+                    var forRemoval = new List<ProcessEntry>();
 
-                    foreach (ProcessEntry p in _processes)
+                    foreach (var p in _processes)
                     {
                         try
                         {
                             if (p.HasExited)
                                 forRemoval.Add(p);
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
+                            // ignored
                         }
                     }
                    
@@ -48,19 +47,19 @@ namespace KMAAndrusiv05
 
                     lock (_locker)
                     {
-                        foreach (ProcessEntry p in forRemoval)
+                        foreach (var p in forRemoval)
                             _processes.Remove(p);
 
-                        foreach (ProcessEntry p in currentProcesses)
+                        foreach (var p in currentProcesses)
                         {
                             _processes.Add(p);
                         }
                     }
 
-                    foreach (ProcessEntry p in _processes)
+                    foreach (var p in _processes)
                         p.Update();
 
-                    Updated(this, null);
+                    Updated?.Invoke(this, null);
 
                     st.Stop();
 
@@ -78,15 +77,11 @@ namespace KMAAndrusiv05
             }
         }
 
-        private UpdateThread updateThread;
         private ObservableCollection<ProcessEntry> _processes;
 
         public ObservableCollection<ProcessEntry> Processes
         {
-            get
-            {
-                return _processes;
-            }
+            get => _processes;
 
             set
             {
@@ -100,12 +95,12 @@ namespace KMAAndrusiv05
         public ProcessGridViewModel()
         {
             _processes = new ObservableCollection<ProcessEntry>();
-            object locker = new object();
+            var locker = new object();
             BindingOperations.EnableCollectionSynchronization(_processes, locker);
-            updateThread = new UpdateThread(Processes, locker);
+            var updateThread = new UpdateThread(Processes, locker);
             updateThread.Updated += UpdateThread_Updated;
 
-            Thread backgroundThread = new Thread(new ThreadStart(updateThread.Run));
+            var backgroundThread = new Thread(new ThreadStart(updateThread.Run));
             backgroundThread.IsBackground = true;
             backgroundThread.Start();
         }
@@ -115,60 +110,45 @@ namespace KMAAndrusiv05
             Application.Current.Dispatcher.BeginInvoke(
                 DispatcherPriority.Background, 
                 new Action(() => {
-                    OnPropertyChanged("Processes");
+                    OnPropertyChanged($"Processes");
                 })
             );
         }
 
         private RelayCommand<object> _modulesCommand;
 
-        public RelayCommand<object> ModulesCommand
-        {
-            get
-            {
-                return _modulesCommand ?? (_modulesCommand = new RelayCommand<object>(
-                           ModulesImplementation, CanExecute));
-            }
-        }
+        public RelayCommand<object> ModulesCommand =>
+            _modulesCommand ?? (_modulesCommand = new RelayCommand<object>(
+                ModulesImplementation, CanExecute));
 
-        private void ModulesImplementation(object obj)
+        private static void ModulesImplementation(object obj)
         {
             NavigationManager.Instance.Navigate(ViewType.Modules);
         }
 
         private RelayCommand<object> _threadsCommand;
 
-        public RelayCommand<object> ThreadsCommand
-        {
-            get
-            {
-                return _threadsCommand ?? (_threadsCommand = new RelayCommand<object>(
-                           ThreadsImplementation, CanExecute));
-            }
-        }
+        public RelayCommand<object> ThreadsCommand =>
+            _threadsCommand ?? (_threadsCommand = new RelayCommand<object>(
+                ThreadsImplementation, CanExecute));
 
-        private bool CanExecute(object obj)
+        private static bool CanExecute(object obj)
         {
             return SelectedProcess != null;
         }
 
-        private void ThreadsImplementation(object obj)
+        private static void ThreadsImplementation(object obj)
         {
             NavigationManager.Instance.Navigate(ViewType.Threads);
         }
 
         private RelayCommand<object> _killCommand;
 
-        public RelayCommand<object> KillCommand
-        {
-            get
-            {
-                return _killCommand ?? (_killCommand = new RelayCommand<object>(
-                           KillImplementation, CanExecute));
-            }
-        }
+        public RelayCommand<object> KillCommand =>
+            _killCommand ?? (_killCommand = new RelayCommand<object>(
+                KillImplementation, CanExecute));
 
-        private void KillImplementation(object obj)
+        private static void KillImplementation(object obj)
         {
             try
             {
@@ -176,31 +156,26 @@ namespace KMAAndrusiv05
             }
             catch
             {
-
+                // ignored
             }
         }
 
         private RelayCommand<object> _folderCommand;
 
-        public RelayCommand<object> FolderCommand
-        {
-            get
-            {
-                return _folderCommand ?? (_folderCommand = new RelayCommand<object>(
-                           FolderImplementation, CanExecute));
-            }
-        }
+        public RelayCommand<object> FolderCommand =>
+            _folderCommand ?? (_folderCommand = new RelayCommand<object>(
+                FolderImplementation, CanExecute));
 
-        private void FolderImplementation(object obj)
+        private static void FolderImplementation(object obj)
         {
             try
             {
                 if (!SelectedProcess.Filepath.Equals("N/A"))
-                    Process.Start(Path.GetDirectoryName(SelectedProcess.Filepath));
+                    Process.Start(Path.GetDirectoryName(SelectedProcess.Filepath) ?? throw new InvalidOperationException());
             }
             catch
             {
-
+                // ignored
             }
         }
     }

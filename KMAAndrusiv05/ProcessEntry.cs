@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Management;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KMAAndrusiv05
 {
-    enum ProcessState
+    internal enum ProcessState
     {
         Active, NotResponding
     }
 
-    class ProcessEntry : INotifyPropertyChanged
+    internal class ProcessEntry : INotifyPropertyChanged
     {
-        private static long _totalRam;
-        private PerformanceCounter _processCounter;
+        private static readonly long TotalRam;
+        private readonly PerformanceCounter _processCounter;
 
-        private Process _process;
+        private readonly Process _process;
 
         private ProcessState _state;
         private long _memory;
@@ -33,14 +29,14 @@ namespace KMAAndrusiv05
         private DateTime _startDate;
         private float _cpuUsage;
 
-        private bool _system = false;
+        private bool _system=false;
 
         public void Update()
         {
             _state = _process.Responding ? ProcessState.Active : ProcessState.NotResponding;
             _memory = _process.PagedMemorySize64 / 1024;
 
-            _memoryPercent = Math.Round((double)_memory / _totalRam * 1000) / 10;
+            _memoryPercent = Math.Round((double)_memory / TotalRam * 1000) / 10;
 
             _threadCount = _process.Threads.Count;
 
@@ -56,7 +52,7 @@ namespace KMAAndrusiv05
                         _filePath = _process.MainModule.FileName;
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _filePath = "N/A";
                 }
@@ -65,7 +61,7 @@ namespace KMAAndrusiv05
                 {
                     _startDate = _process.StartTime;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _system = false;
                 }
@@ -76,33 +72,30 @@ namespace KMAAndrusiv05
                 float f1 = _processCounter.NextValue();
                 _cpuUsage = f1 / Environment.ProcessorCount;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-
+                // ignored
             }
 
-            OnPropertyChanged("CPULoad");
-            OnPropertyChanged("State");
-            OnPropertyChanged("MemoryPercent");
-            OnPropertyChanged("Memory");
-            OnPropertyChanged("ThreadCount");
+            OnPropertyChanged($"CPULoad");
+            OnPropertyChanged($"State");
+            OnPropertyChanged($"MemoryPercent");
+            OnPropertyChanged($"Memory");
+            OnPropertyChanged($"ThreadCount");
         }
 
-        public string ProcessName { get => _process.ProcessName; }
-        public int Id { get => _process.Id; }
-        public ProcessState State { get => _state; }
-        public float CPULoad { get => _cpuUsage; }
-        public double MemoryPercent { get => _memoryPercent; }
-        public long Memory { get => _memory; }
-        public int ThreadCount { get => _threadCount; }
-        public string Username { get => _username; }
-        public string Filepath { get => _filePath; }
-        public DateTime LaunchTime { get => _startDate; }
+        public string ProcessName => _process.ProcessName;
+        public int Id => _process.Id;
+        public ProcessState State => _state;
+        public float CPULoad => _cpuUsage;
+        public double MemoryPercent => _memoryPercent;
+        public long Memory => _memory;
+        public int ThreadCount => _threadCount;
+        public string Username => _username;
+        public string Filepath => _filePath;
+        public DateTime LaunchTime => _startDate;
 
-        public Process Process
-        {
-            get => _process;
-        }
+        public Process Process => _process;
 
         public bool HasExited
         {
@@ -114,7 +107,7 @@ namespace KMAAndrusiv05
                 {
                     return _process.HasExited;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _system = true;
                     return false;
@@ -129,21 +122,19 @@ namespace KMAAndrusiv05
 
         public override bool Equals(object obj)
         {
-            var entry = obj as ProcessEntry;
-
-            if (entry == null)
+            if (!(obj is ProcessEntry entry))
                 return false;
 
-            return entry.Id == this.Id;
+            return entry.Id == Id;
         }
 
         static ProcessEntry()
         {
-            string Query = "SELECT MaxCapacity FROM Win32_PhysicalMemoryArray";
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(Query);
+            const string query = "SELECT MaxCapacity FROM Win32_PhysicalMemoryArray";
+            var searcher = new ManagementObjectSearcher(query);
             foreach (ManagementObject WniPART in searcher.Get())
             {
-                _totalRam = Convert.ToUInt32(WniPART.Properties["MaxCapacity"].Value);
+                TotalRam = Convert.ToUInt32(WniPART.Properties["MaxCapacity"].Value);
             }
         }
         public ProcessEntry(Process process)
@@ -154,13 +145,13 @@ namespace KMAAndrusiv05
 
         private static string GetProcessUser(Process process)
         {
-            IntPtr processHandle = IntPtr.Zero;
+            var processHandle = IntPtr.Zero;
             try
             {
                 OpenProcessToken(process.Handle, 8, out processHandle);
-                WindowsIdentity wi = new WindowsIdentity(processHandle);
-                string user = wi.Name;
-                return user.Contains(@"\") ? user.Substring(user.IndexOf(@"\") + 1) : user;
+                var wi = new WindowsIdentity(processHandle);
+                var user = wi.Name;
+                return user.Contains(@"\") ? user.Substring(user.IndexOf(@"\", StringComparison.Ordinal) + 1) : user;
             }
             catch
             {
@@ -176,7 +167,7 @@ namespace KMAAndrusiv05
         }
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
+        private static extern bool OpenProcessToken(IntPtr processHandle, uint desiredAccess, out IntPtr tokenHandle);
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CloseHandle(IntPtr hObject);

@@ -1,25 +1,12 @@
-﻿using KMAAndrusiv05.Navigation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
+using KMAAndrusiv05.Navigation;
 
 namespace KMAAndrusiv05
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IContentOwner
+    public partial class MainWindow : IContentOwner
     {
         public ContentControl ContentControl => _contentControl;
 

@@ -22,7 +22,7 @@ namespace KMAAndrusiv05.Navigation
                 InitializeView(viewType);
             ContentOwner.ContentControl.Content = ViewsDictionary[viewType];
 
-            Navigated(viewType);
+            Navigated?.Invoke(viewType);
         }
 
         protected abstract void InitializeView(ViewType viewType);
