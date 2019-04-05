@@ -51,12 +51,6 @@ namespace KMAAndrusiv05
             {
                 try
                 {
-
-                    if (_filePath == null)
-                    {
-                        _startDate = _process.StartTime;
-                    }
-
                     if (_filePath == null)
                     {
                         _filePath = _process.MainModule.FileName;
@@ -65,13 +59,27 @@ namespace KMAAndrusiv05
                 catch (Exception e)
                 {
                     _filePath = "N/A";
-                    _system = true;
+                }
+
+                try
+                {
+                    _startDate = _process.StartTime;
+                }
+                catch (Exception e)
+                {
+                    _system = false;
                 }
             }
 
+            try
+            {
+                float f1 = _processCounter.NextValue();
+                _cpuUsage = f1 / Environment.ProcessorCount;
+            }
+            catch (Exception e)
+            {
 
-            float f1 = _processCounter.NextValue();
-            _cpuUsage = f1 / Environment.ProcessorCount;
+            }
 
             OnPropertyChanged("CPULoad");
             OnPropertyChanged("State");
@@ -90,6 +98,11 @@ namespace KMAAndrusiv05
         public string Username { get => _username; }
         public string Filepath { get => _filePath; }
         public DateTime LaunchTime { get => _startDate; }
+
+        public Process Process
+        {
+            get => _process;
+        }
 
         public bool HasExited
         {

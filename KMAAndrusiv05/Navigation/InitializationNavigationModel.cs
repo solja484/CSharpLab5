@@ -17,6 +17,12 @@ namespace KMAAndrusiv05.Navigation
                 case ViewType.List:
                     ViewsDictionary.Add(viewType, new ProcessGridControl());
                     break;
+                case ViewType.Modules:
+                    ViewsDictionary.Add(viewType, new ProcessModulesControl());
+                    break;
+                case ViewType.Threads:
+                    ViewsDictionary.Add(viewType, new ProcessThreadsControl());
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(viewType), viewType, null);
             }

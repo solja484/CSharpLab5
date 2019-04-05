@@ -1,7 +1,9 @@
-﻿using System;
+﻿using KMAAndrusiv05.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -64,8 +66,8 @@ namespace KMAAndrusiv05
 
                     Console.WriteLine(st.ElapsedMilliseconds);
 
-                    if (st.ElapsedMilliseconds < 3000)
-                        Thread.Sleep(3000 - (int)st.ElapsedMilliseconds);
+                    if (st.ElapsedMilliseconds < 2000)
+                        Thread.Sleep(2000 - (int)st.ElapsedMilliseconds);
                 }
             }
 
@@ -93,6 +95,8 @@ namespace KMAAndrusiv05
             }
         }
 
+        public static ProcessEntry SelectedProcess { get; set; }
+
         public ProcessGridViewModel()
         {
             _processes = new ObservableCollection<ProcessEntry>();
@@ -114,6 +118,90 @@ namespace KMAAndrusiv05
                     OnPropertyChanged("Processes");
                 })
             );
+        }
+
+        private RelayCommand<object> _modulesCommand;
+
+        public RelayCommand<object> ModulesCommand
+        {
+            get
+            {
+                return _modulesCommand ?? (_modulesCommand = new RelayCommand<object>(
+                           ModulesImplementation, CanExecute));
+            }
+        }
+
+        private void ModulesImplementation(object obj)
+        {
+            NavigationManager.Instance.Navigate(ViewType.Modules);
+        }
+
+        private RelayCommand<object> _threadsCommand;
+
+        public RelayCommand<object> ThreadsCommand
+        {
+            get
+            {
+                return _threadsCommand ?? (_threadsCommand = new RelayCommand<object>(
+                           ThreadsImplementation, CanExecute));
+            }
+        }
+
+        private bool CanExecute(object obj)
+        {
+            return SelectedProcess != null;
+        }
+
+        private void ThreadsImplementation(object obj)
+        {
+            NavigationManager.Instance.Navigate(ViewType.Threads);
+        }
+
+        private RelayCommand<object> _killCommand;
+
+        public RelayCommand<object> KillCommand
+        {
+            get
+            {
+                return _killCommand ?? (_killCommand = new RelayCommand<object>(
+                           KillImplementation, CanExecute));
+            }
+        }
+
+        private void KillImplementation(object obj)
+        {
+            try
+            {
+                SelectedProcess.Process.Kill();
+            }
+            catch
+            {
+
+            }
+        }
+
+        private RelayCommand<object> _folderCommand;
+
+        public RelayCommand<object> FolderCommand
+        {
+            get
+            {
+                return _folderCommand ?? (_folderCommand = new RelayCommand<object>(
+                           FolderImplementation, CanExecute));
+            }
+        }
+
+        private void FolderImplementation(object obj)
+        {
+            try
+            {
+                if (!SelectedProcess.Filepath.Equals("N/A"))
+                    Process.Start(Path.GetDirectoryName(SelectedProcess.Filepath));
+            }
+            catch
+            {
+
+            }
         }
     }
 }

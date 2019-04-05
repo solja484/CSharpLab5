@@ -14,11 +14,15 @@ namespace KMAAndrusiv05.Navigation
 
         protected Dictionary<ViewType, INavigatable> ViewsDictionary { get; }
 
+        public event NavigationEventHandler Navigated;
+
         public void Navigate(ViewType viewType)
         {
             if (!ViewsDictionary.ContainsKey(viewType))
                 InitializeView(viewType);
             ContentOwner.ContentControl.Content = ViewsDictionary[viewType];
+
+            Navigated(viewType);
         }
 
         protected abstract void InitializeView(ViewType viewType);

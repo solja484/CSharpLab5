@@ -56,6 +56,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ProcessThreadsControl.xaml.cs">
+      <DependentUpon>ProcessThreadsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProcessThreadsViewModel.cs" />
+    <Compile Include="RelayCommand.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -73,6 +78,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ProcessModulesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ProcessThreadsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Navigation\BaseNavigationModel.cs" />
@@ -86,6 +99,10 @@
       <DependentUpon>ProcessGridControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ProcessGridViewModel.cs" />
+    <Compile Include="ProcessModulesControl.xaml.cs">
+      <DependentUpon>ProcessModulesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProcessModulesViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

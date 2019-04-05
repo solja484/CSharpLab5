@@ -5,10 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:KMAAndrusiv05"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="470" d:DesignWidth="800">
     <Grid x:Name="ProcessesGrid">
-
-        <DataGrid ItemsSource="{Binding Processes, Mode=OneWay}" AutoGenerateColumns="False" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="400"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <DataGrid ItemsSource="{Binding Processes, Mode=OneWay}" SelectedItem="{Binding SelectedProcess, Mode=OneWayToSource}" AutoGenerateColumns="False" Grid.ColumnSpan="4" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding ProcessName, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Id" Binding="{Binding Id, Mode=OneWay}"></DataGridTextColumn>
@@ -23,5 +33,10 @@
                 <DataGridTextColumn Header="File Path" Binding="{Binding Filepath, Mode=OneWay}"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
+        <Button Content="Kill" Grid.Row="1" Grid.Column="0" Command="{Binding KillCommand}"/>
+        <Button Content="Open Folder" Grid.Row="1" Grid.Column="1" Command="{Binding FolderCommand}"/>
+        <Button Content="View Modules" Grid.Row="1" Grid.Column="2" Command="{Binding ModulesCommand}" />
+        <Button Content="View Threads" Grid.Row="1" Grid.Column="3" Command="{Binding ThreadsCommand}" />
+
     </Grid>
 </UserControl>
