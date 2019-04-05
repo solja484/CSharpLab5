@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KMAAndrusiv05.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,15 @@ namespace KMAAndrusiv05
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IContentOwner
     {
+        public ContentControl ContentControl => _contentControl;
+
         public MainWindow()
         {
             InitializeComponent();
+            NavigationManager.Instance.Initialize(new InitializationNavigationModel(this));
+            NavigationManager.Instance.Navigate(ViewType.List);
         }
     }
 }

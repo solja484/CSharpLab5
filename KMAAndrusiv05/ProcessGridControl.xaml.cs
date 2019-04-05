@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KMAAndrusiv05.Navigation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,11 +19,12 @@ namespace KMAAndrusiv05
     /// <summary>
     /// Interaction logic for ProcessGridControl.xaml
     /// </summary>
-    public partial class ProcessGridControl : UserControl
+    public partial class ProcessGridControl : UserControl, INavigatable
     {
         public ProcessGridControl()
         {
             InitializeComponent();
+            DataContext = new ProcessGridViewModel();
         }
     }
 }

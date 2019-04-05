@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -64,7 +65,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BaseViewModel.cs" />
-    <Compile Include="INavigationModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -75,7 +75,12 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NavigationManager.cs" />
+    <Compile Include="Navigation\BaseNavigationModel.cs" />
+    <Compile Include="Navigation\IContentOwner.cs" />
+    <Compile Include="Navigation\INavigatable.cs" />
+    <Compile Include="Navigation\INavigationModel.cs" />
+    <Compile Include="Navigation\InitializationNavigationModel.cs" />
+    <Compile Include="Navigation\NavigationManager.cs" />
     <Compile Include="ProcessEntry.cs" />
     <Compile Include="ProcessGridControl.xaml.cs">
       <DependentUpon>ProcessGridControl.xaml</DependentUpon>

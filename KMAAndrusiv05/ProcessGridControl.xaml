@@ -6,30 +6,22 @@
              xmlns:local="clr-namespace:KMAAndrusiv05"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <Grid x:Name="ProcessesGrid">
 
-        <DataGrid  AutoGenerateColumns="False" >
+        <DataGrid ItemsSource="{Binding Processes, Mode=OneWay}" AutoGenerateColumns="False" >
             <DataGrid.Columns>
-
-                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneWay}"></DataGridTextColumn>
-                <DataGridTextColumn Header="  Id  " Binding="{Binding Id, Mode=OneWay}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Name" Binding="{Binding ProcessName, Mode=OneWay}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Id" Binding="{Binding Id, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="State" Binding="{Binding State, Mode=OneWay}"></DataGridTextColumn>
-                <DataGridTextColumn Header="CPULoad" Binding="{Binding CPULoad, Mode=OneWay}"></DataGridTextColumn>
+                <DataGridTextColumn Header="CPU Load" Binding="{Binding CPULoad, Mode=OneWay}"></DataGridTextColumn>
 
                 <DataGridTextColumn Header="Memory %" Binding="{Binding MemoryPercent, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Memory" Binding="{Binding Memory, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Threads" Binding="{Binding ThreadCount, Mode=OneWay}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Filepath" Binding="{Binding Username, Mode=OneWay}"></DataGridTextColumn>
-                <DataGridTextColumn Header="Username" Binding="{Binding Filepath, Mode=OneWay}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Username" Binding="{Binding Username, Mode=OneWay}"></DataGridTextColumn>
                 <DataGridTextColumn Header="Time" Binding="{Binding LaunchTime, Mode=OneWay}"></DataGridTextColumn>
-
-
-
+                <DataGridTextColumn Header="File Path" Binding="{Binding Filepath, Mode=OneWay}"></DataGridTextColumn>
             </DataGrid.Columns>
-
-
-
         </DataGrid>
-
     </Grid>
 </UserControl>
